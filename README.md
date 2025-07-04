@@ -4,6 +4,12 @@ A modern, secure, and feature-rich URL shortener platform with analytics, admin 
 
 ---
 
+## 🌐 Live Demo & Repository
+- **Production:** [https://www.linkshld.xyz/](https://www.linkshld.xyz/)
+- **GitHub Repo:** [https://github.com/NishitShelar/LinkShield](https://github.com/NishitShelar/LinkShield)
+
+---
+
 ## 🚀 Features
 - **Secure URL shortening** with Google Safe Browsing checks
 - **Google & email/password authentication**
@@ -47,7 +53,7 @@ Docker Compose orchestrates all services.
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/yourusername/LinkShield.git
+git clone https://github.com/NishitShelar/LinkShield.git
 cd LinkShield
 ```
 
@@ -143,7 +149,7 @@ Pull requests are welcome! For major changes, please open an issue first to disc
 ---
 
 ## 🆘 Support
-For support, email [support@linkshield.pro](mailto:support@linkshield.pro) or open a GitHub issue.
+For support, email [noreply.linkshield@gmail.com](mailto:noreply.linkshield@gmail.com) or open a GitHub issue.
 
 ---
 
