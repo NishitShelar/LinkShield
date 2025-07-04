@@ -1,0 +1,46 @@
+# Node modules
+node_modules/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# dotenv environment variables
+.env
+.env.*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Build output
+/dist
+/build
+
+# Optional npm cache directory
+.npm
+
+# Coverage directory used by tools like istanbul
+coverage/
+
+# VSCode settings
+.vscode/
+
+# Misc
+*.tgz
+.idea/
+
+# Ignore test output
+/test-output
+
+# Ignore local database
+*.local.db 

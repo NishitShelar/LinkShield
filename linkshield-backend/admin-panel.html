@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinkShield Admin Panel - Backend Testing</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .nav-tab {
+            flex: 1;
+            padding: 15px 20px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #6c757d;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tab.active {
+            background: white;
+            color: #007bff;
+            border-bottom: 3px solid #007bff;
+        }
+
+        .nav-tab:hover {
+            background: #e9ecef;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 30px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #0056b3;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #1e7e34;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .btn-warning:hover {
+            background: #e0a800;
+        }
+
+        .response-box {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .response-box h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .response-content {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            white-space: pre-wrap;
+        }
+
+        .status-success {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .status-error {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .status-info {
+            color: #007bff;
+            font-weight: bold;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid #dee2e6;
+        }
+
+        .card h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .user-list, .link-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .user-item, .link-item {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        .user-item h4, .link-item h4 {
+            color: #007bff;
+            margin-bottom: 5px;
+        }
+
+        .user-item p, .link-item p {
+            margin: 2px 0;
+            font-size: 0.9rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .badge-success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .badge-danger {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #007bff;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔗 LinkShield Admin Panel</h1>
+            <p>Backend Testing Interface</p>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showTab('auth')">Authentication</button>
+            <button class="nav-tab" onclick="showTab('users')">User Management</button>
+            <button class="nav-tab" onclick="showTab('links')">Link Management</button>
+            <button class="nav-tab" onclick="showTab('analytics')">Analytics</button>
+        </div>
+
+        <!-- Authentication Tab -->
+        <div id="auth" class="tab-content active">
+            <div class="grid">
+                <!-- Registration -->
+                <div class="card">
+                    <h3>📝 User Registration</h3>
+                    <form id="registerForm">
+                        <div class="form-group">
+                            <label>Name:</label>
+                            <input type="text" id="regName" placeholder="Enter name" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Email:</label>
+                            <input type="email" id="regEmail" placeholder="Enter email" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Password:</label>
+                            <input type="password" id="regPassword" placeholder="Enter password" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Register</button>
+                    </form>
+                </div>
+
+                <!-- Login -->
+                <div class="card">
+                    <h3>🔐 User Login</h3>
+                    <form id="loginForm">
+                        <div class="form-group">
+                            <label>Email:</label>
+                            <input type="email" id="loginEmail" placeholder="Enter email" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Password:</label>
+                            <input type="password" id="loginPassword" placeholder="Enter password" required>
+                        </div>
+                        <div class="form-group">
+                            <label>OTP (if required):</label>
+                            <input type="text" id="loginOTP" placeholder="Enter OTP (optional)">
+                        </div>
+                        <button type="submit" class="btn btn-success">Login</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="grid">
+                <!-- Email Verification -->
+                <div class="card">
+                    <h3>📧 Email Verification</h3>
+                    <form id="verifyForm">
+                        <div class="form-group">
+                            <label>Verification Token:</label>
+                            <input type="text" id="verifyToken" placeholder="Enter token from email">
+                        </div>
+                        <button type="submit" class="btn btn-warning">Verify Email</button>
+                        <button type="button" class="btn btn-info" onclick="manualVerify()">Manual Verify (Test)</button>
+                    </form>
+                </div>
+
+                <!-- Resend OTP -->
+                <div class="card">
+                    <h3>🔄 Resend OTP</h3>
+                    <form id="resendOTPForm">
+                        <div class="form-group">
+                            <label>Email:</label>
+                            <input type="email" id="resendOTPEmail" placeholder="Enter email">
+                        </div>
+                        <button type="submit" class="btn btn-warning">Resend OTP</button>
+                    </form>
+                </div>
+            </div>
+
+            <div style="margin: 30px 0 10px 0; text-align: center;">
+                <div id="g_id_onload"
+                     data-client_id="521884654965-kk6ji9s15g36simk1cr4indtb37v3dnd.apps.googleusercontent.com"
+                     data-callback="onGoogleSignIn"
+                     data-auto_prompt="false">
+                </div>
+                <div class="g_id_signin"
+                     data-type="standard"
+                     data-shape="rectangular"
+                     data-theme="outline"
+                     data-text="sign_in_with"
+                     data-size="large"
+                     data-logo_alignment="left">
+                </div>
+                <p style="margin-top: 10px; color: #888; font-size: 0.95em;">or</p>
+            </div>
+
+            <div class="response-box">
+                <h3>📤 Response</h3>
+                <div id="authResponse" class="response-content">Ready for testing...</div>
+            </div>
+        </div>
+
+        <!-- User Management Tab -->
+        <div id="users" class="tab-content">
+            <div class="grid">
+                <div class="card">
+                    <h3>👥 User List</h3>
+                    <button class="btn btn-primary" onclick="getUsers()">Load Users</button>
+                    <div id="userList" class="user-list"></div>
+                </div>
+
+                <div class="card">
+                    <h3>🗑️ Delete User</h3>
+                    <form id="deleteUserForm">
+                        <div class="form-group">
+                            <label>User ID:</label>
+                            <input type="text" id="deleteUserId" placeholder="Enter user ID">
+                        </div>
+                        <button type="submit" class="btn btn-danger">Delete User</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="response-box">
+                <h3>📤 Response</h3>
+                <div id="userResponse" class="response-content">Ready for testing...</div>
+            </div>
+        </div>
+
+        <!-- Link Management Tab -->
+        <div id="links" class="tab-content">
+            <div class="grid">
+                <div class="card">
+                    <h3>🔗 Create Link</h3>
+                    <form id="createLinkForm">
+                        <div class="form-group">
+                            <label>Original URL:</label>
+                            <input type="url" id="originalUrl" placeholder="https://example.com" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Create Link</button>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <h3>📋 Link List</h3>
+                    <button class="btn btn-primary" onclick="getLinks()">Load Links</button>
+                    <div id="linkList" class="link-list"></div>
+                </div>
+            </div>
+
+            <div class="response-box">
+                <h3>📤 Response</h3>
+                <div id="linkResponse" class="response-content">Ready for testing...</div>
+            </div>
+        </div>
+
+        <!-- Analytics Tab -->
+        <div id="analytics" class="tab-content">
+            <div class="grid">
+                <div class="card">
+                    <h3>📊 Platform Stats</h3>
+                    <button class="btn btn-primary" onclick="getPlatformStats()">Get Platform Stats</button>
+                </div>
+
+                <div class="card">
+                    <h3>👤 User Stats</h3>
+                    <button class="btn btn-primary" onclick="getUserStats()">Get User Stats</button>
+                </div>
+            </div>
+
+            <div class="response-box">
+                <h3>📤 Response</h3>
+                <div id="analyticsResponse" class="response-content">Ready for testing...</div>
+            </div>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Loading...</p>
+        </div>
+    </div>
+
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script>
+        const API_BASE = 'http://localhost:5000/api';
+        let authToken = localStorage.getItem('authToken');
+
+        // Tab switching
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Utility functions
+        function showLoading() {
+            document.getElementById('loading').style.display = 'block';
+        }
+
+        function hideLoading() {
+            document.getElementById('loading').style.display = 'none';
+        }
+
+        function updateResponse(elementId, data, status = 'info') {
+            const element = document.getElementById(elementId);
+            const timestamp = new Date().toLocaleString();
+            const statusClass = `status-${status}`;
+            
+            element.innerHTML = `[${timestamp}] ${status.toUpperCase()}: ${JSON.stringify(data, null, 2)}`;
+            element.className = `response-content ${statusClass}`;
+        }
+
+        async function makeRequest(url, options = {}) {
+            try {
+                showLoading();
+                
+                const config = {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...options.headers
+                    },
+                    ...options
+                };
+
+                if (authToken) {
+                    config.headers.Authorization = `Bearer ${authToken}`;
+                }
+
+                const response = await fetch(url, config);
+                const data = await response.json();
+
+                return { response, data };
+            } catch (error) {
+                return { response: null, data: { error: error.message } };
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Authentication functions
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                name: document.getElementById('regName').value,
+                email: document.getElementById('regEmail').value,
+                password: document.getElementById('regPassword').value
+            };
+
+            const { response, data } = await makeRequest(`${API_BASE}/auth/register`, {
+                method: 'POST',
+                body: JSON.stringify(formData)
+            });
+
+            updateResponse('authResponse', data, response?.ok ? 'success' : 'error');
+        });
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                email: document.getElementById('loginEmail').value,
+                password: document.getElementById('loginPassword').value
+            };
+
+            const otp = document.getElementById('loginOTP').value;
+            if (otp) formData.otp = otp;
+
+            const { response, data } = await makeRequest(`${API_BASE}/auth/login`, {
+                method: 'POST',
+                body: JSON.stringify(formData)
+            });
+
+            if (response?.ok && data.data?.token) {
+                authToken = data.data.token;
+                localStorage.setItem('authToken', authToken);
+                updateResponse('authResponse', { message: 'Login successful! Token saved.', data: data.data }, 'success');
+            } else {
+                updateResponse('authResponse', data, 'error');
+            }
+        });
+
+        document.getElementById('verifyForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const token = document.getElementById('verifyToken').value;
+            const { response, data } = await makeRequest(`${API_BASE}/auth/verify-email/${token}`, {
+                method: 'GET'
+            });
+
+            updateResponse('authResponse', data, response?.ok ? 'success' : 'error');
+        });
+
+        document.getElementById('resendOTPForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                email: document.getElementById('resendOTPEmail').value
+            };
+
+            const { response, data } = await makeRequest(`${API_BASE}/auth/resend-otp`, {
+                method: 'POST',
+                body: JSON.stringify(formData)
+            });
+
+            updateResponse('authResponse', data, response?.ok ? 'success' : 'error');
+        });
+
+        async function manualVerify() {
+            const userId = prompt('Enter user ID to manually verify:');
+            if (!userId) return;
+
+            const { response, data } = await makeRequest(`${API_BASE}/auth/manual-verify/${userId}`, {
+                method: 'GET'
+            });
+
+            updateResponse('authResponse', data, response?.ok ? 'success' : 'error');
+        }
+
+        async function onGoogleSignIn(googleUser) {
+            showLoading();
+            try {
+                const idToken = googleUser.credential;
+                const { response, data } = await makeRequest(`${API_BASE}/auth/google`, {
+                    method: 'POST',
+                    body: JSON.stringify({ idToken }),
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                if (response?.ok && data.data?.token) {
+                    authToken = data.data.token;
+                    localStorage.setItem('authToken', authToken);
+                    updateResponse('authResponse', { message: 'Google login successful! Token saved.', data: data.data }, 'success');
+                } else {
+                    updateResponse('authResponse', data, 'error');
+                }
+            } catch (err) {
+                updateResponse('authResponse', { error: err.message }, 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // User management functions
+        async function getUsers() {
+            const { response, data } = await makeRequest(`${API_BASE}/admin/users`, {
+                method: 'GET'
+            });
+
+            if (response?.ok) {
+                const userList = document.getElementById('userList');
+                userList.innerHTML = data.data.map(user => `
+                    <div class="user-item">
+                        <h4>${user.name}</h4>
+                        <p><strong>Email:</strong> ${user.email}</p>
+                        <p><strong>ID:</strong> ${user._id}</p>
+                        <p><strong>Role:</strong> <span class="badge badge-${user.role === 'admin' ? 'danger' : 'success'}">${user.role}</span></p>
+                        <p><strong>Verified:</strong> <span class="badge badge-${user.emailVerified ? 'success' : 'warning'}">${user.emailVerified ? 'Yes' : 'No'}</span></p>
+                        <p><strong>Created:</strong> ${new Date(user.createdAt).toLocaleDateString()}</p>
+                    </div>
+                `).join('');
+            }
+
+            updateResponse('userResponse', data, response?.ok ? 'success' : 'error');
+        }
+
+        document.getElementById('deleteUserForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const userId = document.getElementById('deleteUserId').value;
+            const { response, data } = await makeRequest(`${API_BASE}/admin/users/${userId}`, {
+                method: 'DELETE'
+            });
+
+            updateResponse('userResponse', data, response?.ok ? 'success' : 'error');
+            if (response?.ok) {
+                getUsers(); // Refresh user list
+            }
+        });
+
+        // Link management functions
+        document.getElementById('createLinkForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                originalUrl: document.getElementById('originalUrl').value
+            };
+
+            const { response, data } = await makeRequest(`${API_BASE}/links`, {
+                method: 'POST',
+                body: JSON.stringify(formData)
+            });
+
+            updateResponse('linkResponse', data, response?.ok ? 'success' : 'error');
+            if (response?.ok) {
+                getLinks(); // Refresh link list
+            }
+        });
+
+        async function getLinks() {
+            const { response, data } = await makeRequest(`${API_BASE}/links`, {
+                method: 'GET'
+            });
+
+            if (response?.ok) {
+                const linkList = document.getElementById('linkList');
+                linkList.innerHTML = data.data.map(link => `
+                    <div class="link-item">
+                        <h4>${link.shortCode}</h4>
+                        <p><strong>Original URL:</strong> ${link.originalUrl}</p>
+                        <p><strong>Short URL:</strong> ${link.shortUrl}</p>
+                        <p><strong>Clicks:</strong> ${link.clicks || 0}</p>
+                        <p><strong>Created:</strong> ${new Date(link.createdAt).toLocaleDateString()}</p>
+                    </div>
+                `).join('');
+            }
+
+            updateResponse('linkResponse', data, response?.ok ? 'success' : 'error');
+        }
+
+        // Analytics functions
+        async function getPlatformStats() {
+            const { response, data } = await makeRequest(`${API_BASE}/analytics/platform`, {
+                method: 'GET'
+            });
+
+            updateResponse('analyticsResponse', data, response?.ok ? 'success' : 'error');
+        }
+
+        async function getUserStats() {
+            const { response, data } = await makeRequest(`${API_BASE}/analytics/user`, {
+                method: 'GET'
+            });
+
+            updateResponse('analyticsResponse', data, response?.ok ? 'success' : 'error');
+        }
+
+        // Initialize
+        if (authToken) {
+            updateResponse('authResponse', { message: 'Token found in localStorage. You can now test protected routes.' }, 'info');
+        }
+    </script>
+</body>
+</html> 

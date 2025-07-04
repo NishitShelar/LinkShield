@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to LinkShield Pro</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            padding: 20px 0;
+            background-color: #4F46E5;
+            color: white;
+            border-radius: 8px;
+        }
+        .content {
+            padding: 20px;
+            background-color: #f9fafb;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        .button {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #4F46E5;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            margin: 20px 0;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Welcome to LinkShield Pro!</h1>
+    </div>
+    
+    <div class="content">
+        <h2>Hello <%= name %>,</h2>
+        
+        <p>Thank you for joining LinkShield Pro! We're excited to have you on board and help you create secure, trackable short links for your business.</p>
+        
+        <p>With LinkShield Pro, you can:</p>
+        <ul>
+            <li>Create secure, branded short links</li>
+            <li>Monitor link performance with detailed analytics</li>
+            <li>Get instant alerts for suspicious activity</li>
+            <li>Protect your audience from malicious links</li>
+        </ul>
+
+        <% if (verificationLink) { %>
+            <p>To get started, please verify your email address by clicking the button below:</p>
+            <a href="<%= verificationLink %>" class="button">Verify Email Address</a>
+        <% } %>
+
+        <p>If you have any questions or need assistance, our support team is here to help!</p>
+        
+        <p>Best regards,<br>The LinkShield Pro Team</p>
+    </div>
+
+    <div class="footer">
+        <p>This email was sent to <%= email %>. If you didn't create an account with LinkShield Pro, please ignore this email.</p>
+        <p>&copy; <%= new Date().getFullYear() %> LinkShield Pro. All rights reserved.</p>
+    </div>
+</body>
+</html> 
