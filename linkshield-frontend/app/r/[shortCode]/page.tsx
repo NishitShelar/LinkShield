@@ -13,7 +13,7 @@ export default function RedirectPage({ params }: { params: { shortCode: string }
             setCountdown((prev) => {
               if (prev <= 1) {
                 clearInterval(timer)
-          window.location.href = `http://localhost:5000/r/${shortCode}`
+          window.location.href = `https://api.linkshld.xyz/r/${shortCode}`
                 return 0
               }
               return prev - 1
@@ -31,7 +31,7 @@ export default function RedirectPage({ params }: { params: { shortCode: string }
           <div>
             <h1 className="text-xl font-bold mb-2">Redirecting...</h1>
             <p className="text-gray-600 mb-4">You'll be redirected in {countdown} seconds</p>
-          <Button onClick={() => (window.location.href = `http://localhost:5000/r/${shortCode}`)} className="w-full">
+          <Button onClick={() => (window.location.href = `https://api.linkshld.xyz/r/${shortCode}`)} className="w-full">
               Continue Now
             </Button>
           </div>

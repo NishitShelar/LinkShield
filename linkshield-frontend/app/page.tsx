@@ -1,5 +1,5 @@
 "use client"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import React from "react"
 import Link from "next/link"
 
@@ -11,6 +11,7 @@ import { api } from "@/lib/api"
 import { useAuth } from "@/lib/auth"
 import { useToast } from "@/hooks/use-toast"
 import { Copy, Sparkles, Zap, Shield, BarChart3, ArrowRight } from "lucide-react"
+import { getVisitorId } from "@/lib/fingerprint"
 
 export default function HomePage() {
   const { user, token } = useAuth()
@@ -21,6 +22,31 @@ export default function HomePage() {
   const [feedback, setFeedback] = useState("")
   const [feedbackSent, setFeedbackSent] = useState(false)
   const [showLoginNotice, setShowLoginNotice] = useState(false)
+  const [anonCount, setAnonCount] = useState<number | null>(null)
+  const [visitorId, setVisitorId] = useState<string | null>(null)
+
+  // On mount, get visitorId and count from localStorage
+  useEffect(() => {
+    if (user) return // Only for anonymous
+    getVisitorId().then((vid) => {
+      setVisitorId(vid)
+      const key = `linkshield_anon_count_${vid}`
+      const raw = localStorage.getItem(key)
+      let count = 0
+      if (raw) {
+        try {
+          const obj = JSON.parse(raw)
+          // Only count links from the last 24h
+          const now = Date.now()
+          const filtered = (obj.history || []).filter((t: number) => now - t < 24*60*60*1000)
+          count = filtered.length
+          // Save back filtered history
+          localStorage.setItem(key, JSON.stringify({ history: filtered }))
+        } catch {}
+      }
+      setAnonCount(count)
+    })
+  }, [user])
 
   const handleShorten = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -28,10 +54,44 @@ export default function HomePage() {
 
     setLoading(true)
     try {
-      const response = await api.createLink({ originalUrl: url }, token)
+      let vid = visitorId
+      if (!user && !vid) {
+        vid = await getVisitorId()
+        setVisitorId(vid)
+      }
+      let localKey = vid ? `linkshield_anon_count_${vid}` : null
+      let localCount = anonCount ?? 0
+      const response = await api.createLink({ originalUrl: url, ...(vid && { visitorId: vid }) }, token)
       if (response.success) {
-        setShortUrl(`http://localhost:3000/r/${response.data.shortCode}`)
+        setShortUrl(`https://linkshld.xyz/r/${response.data.shortCode}`)
         toast({ title: "Link created!", description: "Your short link is ready" })
+        // Update localStorage count for anonymous
+        if (!user && localKey) {
+          let history: number[] = []
+          try {
+            const raw = localStorage.getItem(localKey)
+            if (raw) {
+              const obj = JSON.parse(raw)
+              const now = Date.now()
+              history = (obj.history || []).filter((t: number) => now - t < 24*60*60*1000)
+            }
+          } catch {}
+          history.push(Date.now())
+          localStorage.setItem(localKey, JSON.stringify({ history }))
+          setAnonCount(history.length)
+        }
+      } else if (
+        response.message === 'Anonymous users are limited to 3 links per 24 hours. Please sign up for unlimited access.' ||
+        response.error === 'Anonymous users are limited to 3 links per 24 hours. Please sign up for unlimited access.'
+      ) {
+        toast({
+          title: "Limit reached",
+          description: "You have reached the free link limit. Please sign in for unlimited links.",
+          variant: "destructive"
+        })
+        setTimeout(() => {
+          window.location.href = "/login"
+        }, 1500)
       }
     } catch (error) {
       toast({ title: "Error", description: "Failed to create link", variant: "destructive" })
@@ -56,7 +116,7 @@ export default function HomePage() {
     }
     if (!feedback.trim()) return
     try {
-      const res = await fetch("http://localhost:5000/api/feedback", {
+      const res = await fetch("https://api.linkshld.xyz/api/feedback", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -140,8 +200,8 @@ export default function HomePage() {
 
               {!user && (
                 <p className="text-sm text-gray-500">
-                  3 free links without account •{" "}
-                  <span className="text-blue-600 cursor-pointer">Sign up for unlimited</span>
+                  {anonCount !== null ? `${3 - anonCount} free links left without account` : "3 free links without account"} •{" "}
+                  <span className="text-blue-600 cursor-pointer" onClick={() => window.location.href = "/register"}>Sign up for unlimited</span>
                 </p>
               )}
             </form>

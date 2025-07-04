@@ -1,4 +1,4 @@
-const API_BASE = "http://localhost:5000"
+const API_BASE = "https://api.linkshld.xyz"
 
 export const api = {
   // Auth
@@ -49,15 +49,26 @@ export const api = {
     }).then((r) => r.json()),
 
   // Links
-  createLink: (data: any, token?: string) =>
-    fetch(`${API_BASE}/api/links`, {
+  createLink: (data: any, token?: string) => {
+    if (token) {
+      return fetch(`${API_BASE}/api/links`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(data),
+      }).then((r) => r.json());
+    } else {
+      return fetch(`${API_BASE}/api/links/anonymous`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        ...(token && { Authorization: `Bearer ${token}` }),
       },
       body: JSON.stringify(data),
-    }).then((r) => r.json()),
+      }).then((r) => r.json());
+    }
+  },
 
   getLinks: (token: string) =>
     fetch(`${API_BASE}/api/links`, {

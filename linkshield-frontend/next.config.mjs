@@ -1,3 +1,8 @@
+import { dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   eslint: {
@@ -9,17 +14,11 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-}
-
-// Sentry integration (if SENTRY_DSN is set)
-const { withSentryConfig } = require('@sentry/nextjs');
-
-const sentryWebpackPluginOptions = {
-  silent: true,
+  webpack(config) {
+    // Fix for path alias '@'
+    config.resolve.alias['@'] = __dirname;
+    return config;
+  },
 };
 
-const finalConfig = process.env.SENTRY_DSN
-  ? withSentryConfig(nextConfig, sentryWebpackPluginOptions)
-  : nextConfig;
-
-export default finalConfig
+export default nextConfig;

@@ -341,7 +341,7 @@ export default function PowerAdminPage() {
         api.getAdminUsers(token),
         api.getAdminLinks(token),
         api.getUserAnalytics(token),
-        fetch('http://localhost:5000/api/admin/feedback', {
+        fetch('https://api.linkshld.xyz/api/admin/feedback', {
           headers: { Authorization: `Bearer ${token}` }
         }).then(r => r.json())
       ]).then(([dashboardRes, usersRes, linksRes, analyticsRes, feedbackRes]) => {
@@ -776,7 +776,7 @@ export default function PowerAdminPage() {
                               </BarChart>
                             </ResponsiveContainer>
                           </Card>
-                        )}
+                    )}
                       </div>
 
                       {/* Device & Browser Quick Stats */}
@@ -1070,7 +1070,7 @@ export default function PowerAdminPage() {
                                   <span className="text-sm">{country.name}</span>
                                   <Badge variant="outline">{country.value} clicks</Badge>
                                 </div>
-                              ))}
+                            ))}
                             </div>
                           </div>
                         ) : (
@@ -1092,7 +1092,7 @@ export default function PowerAdminPage() {
                                   )}
                                   {mapPreciseCoordinates && (
                                     <span className="ml-2 text-xs text-green-600">📍 Precise location</span>
-                                  )}
+                      )}
                                 </span>
                     </div>
                               <Button
@@ -1271,7 +1271,7 @@ export default function PowerAdminPage() {
                                 <td className="py-2 px-4 border-b">{fb.user ? `${fb.user.name} (${fb.user.email})` : 'Anonymous'}</td>
                                 <td className="py-2 px-4 border-b">{new Date(fb.createdAt).toLocaleString()}</td>
                               </tr>
-                            ))}
+                                    ))}
                           </tbody>
                         </table>
                       )}

@@ -1,6 +1,6 @@
 "use client"
 export const dynamic = "force-dynamic";
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import React from "react"
 import { useRouter } from "next/navigation"
 
@@ -15,6 +15,7 @@ import { Plus, Copy, Trash2, ExternalLink, BarChart3, Calendar, Link2, Users, Sp
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip"
+import FlappyLinkShield from "../../components/flappy-bird"
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -30,6 +31,9 @@ export default function DashboardPage() {
   const [showLoginNotice, setShowLoginNotice] = useState(false)
   const [analytics, setAnalytics] = useState<any>(null)
   const [uniqueVisitors, setUniqueVisitors] = useState(0)
+  const [activityLog, setActivityLog] = useState<any[]>([])
+  const [now, setNow] = useState(Date.now())
+  const prevLinksRef = useRef<any[]>([])
 
   useEffect(() => {
     if (token) {
@@ -65,6 +69,62 @@ export default function DashboardPage() {
     }
     return () => clearTimeout(timeout);
   }, [loading]);
+
+  // Poll for new links every 15s
+  useEffect(() => {
+    if (!token) return;
+    let interval = setInterval(() => {
+      fetchLinks()
+    }, 15000)
+    return () => clearInterval(interval)
+  }, [token])
+
+  // Live time-ago update every 10s
+  useEffect(() => {
+    const interval = setInterval(() => setNow(Date.now()), 10000)
+    return () => clearInterval(interval)
+  }, [])
+
+  // Build activity log from links
+  useEffect(() => {
+    if (!user) return;
+    let log: any[] = []
+    // Signed in event
+    log.push({ type: "signin", time: user.createdAt || user.lastLogin || user.updatedAt || new Date(), user })
+    // Compare previous and current links for new links/clicks
+    const prevLinks = prevLinksRef.current
+    const linkMap: Record<string, any> = {}
+    links.forEach((l: any) => (linkMap[l._id] = l))
+    // New links
+    links.forEach((link: any) => {
+      if (!prevLinks.find((pl: any) => pl._id === link._id)) {
+        log.push({ type: "newlink", time: link.createdAt, link })
+      }
+    })
+    // Clicks
+    links.forEach((link: any) => {
+      const prev = prevLinks.find((pl: any) => pl._id === link._id)
+      const prevClicks = prev?.analytics?.totalClicks || 0
+      const nowClicks = link.analytics?.totalClicks || 0
+      if (nowClicks > prevClicks) {
+        log.push({ type: "clicks", time: link.updatedAt || link.analytics?.lastClicked || link.createdAt, link, count: nowClicks - prevClicks })
+      }
+    })
+    // Sort log by time desc
+    log = log.sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime())
+    setActivityLog(log)
+    prevLinksRef.current = links
+  }, [links, user, now])
+
+  // Helper for time ago
+  function timeAgo(date: string | number | Date) {
+    const d = new Date(date)
+    const diff = Math.floor((now - d.getTime()) / 1000)
+    if (diff < 60) return `${diff}s ago`
+    if (diff < 3600) return `${Math.floor(diff/60)}m ago`
+    if (diff < 86400) return `${Math.floor(diff/3600)}h ago`
+    return d.toLocaleDateString()
+  }
 
   const fetchLinks = async () => {
     try {
@@ -105,7 +165,7 @@ export default function DashboardPage() {
     try {
       const response = await api.createLink({ originalUrl: url }, token)
       if (response.success) {
-        setShortUrl(`http://localhost:3000/r/${response.data.shortCode}`)
+        setShortUrl(`https://linkshld.xyz/r/${response.data.shortCode}`)
         toast({ title: "Link created!", description: "Your short link is ready" })
         setUrl("")
         fetchLinks()
@@ -146,7 +206,7 @@ export default function DashboardPage() {
     }
     if (!feedback.trim()) return
     try {
-      const res = await fetch("http://localhost:5000/api/feedback", {
+      const res = await fetch("https://api.linkshld.xyz/api/feedback", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -257,75 +317,65 @@ export default function DashboardPage() {
           </Card>
         </div>
 
-        {/* Recent Links & Recent Activity Side by Side */}
+        {/* Recent Links & Flappy Bird Mini-Game */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-          {/* Recent Links Section */}
-          <Card className="p-6 bg-white/90 shadow-lg border-0">
+          {/* Recent Links Section (vertical, 4 fully visible, extra height) */}
+          <Card className="p-6 bg-white/90 shadow-lg border-0 flex flex-col items-center justify-center min-h-[520px] sm:min-h-[320px] max-h-[520px]" style={{ minHeight: '520px', maxHeight: '520px' }}>
             <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
               <Link2 className="w-6 h-6 text-purple-500" /> Recent Links
             </h2>
             {links.length === 0 ? (
               <div className="text-gray-500">No links yet. Start by creating your first short link above!</div>
-          ) : (
-            <div className="space-y-4">
-                {links.slice(0, 5).map((link: any) => (
-                <div key={link._id || link.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50">
+            ) : (
+              <div className="space-y-4 overflow-y-auto w-full" style={{ maxHeight: '380px' }}>
+                {links.map((link: any) => (
+                  <div key={link._id || link.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50">
                     <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
+                      <div className="flex items-center gap-2 mb-1">
                         <h3 className="font-medium">{link.title || link.shortCode}</h3>
-                      <Badge variant={link.status === "active" ? "default" : "secondary"}>
-                        {link.status === "active" ? "Active" : "Inactive"}
-                      </Badge>
-                    </div>
-                      <p className="text-sm text-gray-600 truncate max-w-xs cursor-pointer" style={{ maxWidth: '320px' }}>{link.originalUrl}</p>
-                    <div className="flex items-center gap-4 text-xs text-gray-500 mt-1">
-                      <span className="flex items-center gap-1">
-                        <BarChart3 className="w-3 h-3" />
-                        {(link.analytics?.totalClicks || 0)} clicks
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Calendar className="w-3 h-3" />
-                        {link.createdAt ? new Date(link.createdAt).toLocaleDateString() : ""}
-                      </span>
+                        <Badge variant={link.status === "active" ? "default" : "secondary"}>
+                          {link.status === "active" ? "Active" : "Inactive"}
+                        </Badge>
+                      </div>
+                      <p className="text-sm text-gray-600 truncate max-w-xs cursor-pointer" style={{ maxWidth: '220px' }}>{link.originalUrl}</p>
+                      <div className="flex items-center gap-4 text-xs text-gray-500 mt-1">
+                        <span className="flex items-center gap-1">
+                          <BarChart3 className="w-3 h-3" />
+                          {(link.analytics?.totalClicks || 0)} clicks
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Calendar className="w-3 h-3" />
+                          {link.createdAt ? new Date(link.createdAt).toLocaleDateString() : ""}
+                        </span>
                       </div>
                     </div>
-                  <div className="flex items-center gap-2">
-                    <Button variant="ghost" size="sm" onClick={() => copyLink(`http://localhost:3000/r/${link.shortCode}`)}>
-                      <Copy className="w-4 h-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm" asChild>
-                      <a href={link.originalUrl} target="_blank" rel="noreferrer">
-                        <ExternalLink className="w-4 h-4" />
-                      </a>
-                    </Button>
+                    <div className="flex items-center gap-2">
+                      <Button variant="ghost" size="sm" onClick={() => copyLink(`https://linkshld.xyz/r/${link.shortCode}`)}>
+                        <Copy className="w-4 h-4" />
+                      </Button>
+                      <Button variant="ghost" size="sm" asChild>
+                        <a href={link.originalUrl} target="_blank" rel="noreferrer">
+                          <ExternalLink className="w-4 h-4" />
+                        </a>
+                      </Button>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </Card>
+                ))}
+              </div>
+            )}
+          </Card>
 
-          {/* Recent Activity */}
-          <Card className="p-6 bg-white/90 shadow-lg border-0">
-            <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
-              <Sparkles className="w-6 h-6 text-blue-500" /> Recent Activity
-            </h2>
-            {/* Replace with actual recent activity data if available */}
-            <ul className="divide-y divide-gray-200">
-              {/* Example activity items */}
-              <li className="py-3 flex items-center justify-between">
-                <span className="text-gray-700">Shortened a new link</span>
-                <span className="text-xs text-gray-400">2 hours ago</span>
-              </li>
-              <li className="py-3 flex items-center justify-between">
-                <span className="text-gray-700">Link clicked from India</span>
-                <span className="text-xs text-gray-400">5 hours ago</span>
-              </li>
-              <li className="py-3 flex items-center justify-between">
-                <span className="text-gray-700">Received 10 new clicks</span>
-                <span className="text-xs text-gray-400">1 day ago</span>
-              </li>
-            </ul>
+          {/* Flappy Bird Mini-Game (Help LinkShield) with buffer below, extra height */}
+          <Card className="p-6 bg-white/90 shadow-lg border-0 flex flex-col items-center justify-center min-h-[520px] sm:min-h-[320px] max-h-[520px]">
+            <div className="w-full flex-1 flex items-center justify-center">
+              <FlappyLinkShield />
+            </div>
+            {/* Buffer area for Try Again or manual entry */}
+            <div className="w-full mt-4 flex flex-col items-center gap-2">
+              {/* Example: Try Again button (can be customized as needed) */}
+              {/* <Button className="w-32" onClick={...}>Try Again</Button> */}
+              {/* <Input className="w-full max-w-xs" placeholder="Manual entry..." /> */}
+            </div>
           </Card>
         </div>
 
