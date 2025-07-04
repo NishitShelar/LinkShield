@@ -154,4 +154,4 @@ For support, email [noreply.linkshield@gmail.com](mailto:noreply.linkshield@gmai
 ---
 
 ## 📝 License
-[MIT](https://github.com/NishitShelar/LinkShield/blob/main/LICENSE)
+[MIT LICENSE](https://github.com/NishitShelar/LinkShield/blob/main/LICENSE)
