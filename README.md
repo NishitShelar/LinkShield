@@ -6,23 +6,34 @@ A modern, secure, and feature-rich URL shortener platform with analytics, admin 
 
 ## 📸 Preview
 
-### Landing Page
-![Landing Page](https://raw.githubusercontent.com/NishitShelar/LinkShield/main/assets/1.jpg)
-
-### Dashboard & URL Management
-![Dashboard](https://raw.githubusercontent.com/NishitShelar/LinkShield/main/assets/2.jpg)
-
-### Analytics & Insights
-![Analytics](https://raw.githubusercontent.com/NishitShelar/LinkShield/main/assets/3.jpg)
-
-### Admin Panel
-![Admin Panel](https://raw.githubusercontent.com/NishitShelar/LinkShield/main/assets/4.jpg)
-
-### Flappy Bird Mini-Game
-![Flappy Bird Game](https://raw.githubusercontent.com/NishitShelar/LinkShield/main/assets/5.jpg)
-
-### Mobile Responsive Design
-![Mobile View](https://raw.githubusercontent.com/NishitShelar/LinkShield/main/assets/6.jpg)
+<div align="center">
+  <table>
+    <tr>
+      <td align="center"><strong>Landing Page</strong></td>
+      <td align="center"><strong>Dashboard & URL Management</strong></td>
+    </tr>
+    <tr>
+      <td><img src="https://raw.githubusercontent.com/NishitShelar/LinkShield/main/assets/1.jpg" width="100%"></td>
+      <td><img src="https://raw.githubusercontent.com/NishitShelar/LinkShield/main/assets/2.jpg" width="100%"></td>
+    </tr>
+    <tr>
+      <td align="center"><strong>Analytics & Insights</strong></td>
+      <td align="center"><strong>Admin Panel</strong></td>
+    </tr>
+    <tr>
+      <td><img src="https://raw.githubusercontent.com/NishitShelar/LinkShield/main/assets/3.jpg" width="100%"></td>
+      <td><img src="https://raw.githubusercontent.com/NishitShelar/LinkShield/main/assets/4.jpg" width="100%"></td>
+    </tr>
+    <tr>
+      <td align="center"><strong>Flappy Bird Mini-Game</strong></td>
+      <td align="center"><strong>Mobile Responsive Design</strong></td>
+    </tr>
+    <tr>
+      <td><img src="https://raw.githubusercontent.com/NishitShelar/LinkShield/main/assets/5.jpg" width="100%"></td>
+      <td><img src="https://raw.githubusercontent.com/NishitShelar/LinkShield/main/assets/6.jpg" width="100%"></td>
+    </tr>
+  </table>
+</div>
 
 ---
 
