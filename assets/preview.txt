@@ -1,0 +1,1 @@
+This Folder contains the preview of the final app's frontend
