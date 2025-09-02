@@ -4,6 +4,28 @@ A modern, secure, and feature-rich URL shortener platform with analytics, admin 
 
 ---
 
+## 📸 Preview
+
+### Landing Page
+![Landing Page](https://raw.githubusercontent.com/NishitShelar/LinkShield/main/assets/1.jpg)
+
+### Dashboard & URL Management
+![Dashboard](https://raw.githubusercontent.com/NishitShelar/LinkShield/main/assets/2.jpg)
+
+### Analytics & Insights
+![Analytics](https://raw.githubusercontent.com/NishitShelar/LinkShield/main/assets/3.jpg)
+
+### Admin Panel
+![Admin Panel](https://raw.githubusercontent.com/NishitShelar/LinkShield/main/assets/4.jpg)
+
+### Flappy Bird Mini-Game
+![Flappy Bird Game](https://raw.githubusercontent.com/NishitShelar/LinkShield/main/assets/5.jpg)
+
+### Mobile Responsive Design
+![Mobile View](https://raw.githubusercontent.com/NishitShelar/LinkShield/main/assets/6.jpg)
+
+---
+
 ## 🌐 Live Demo & Repository
 - **Production:** [https://www.linkshld.xyz/](https://www.linkshld.xyz/)
 - **GitHub Repo:** [https://github.com/NishitShelar/LinkShield](https://github.com/NishitShelar/LinkShield)
