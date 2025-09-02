@@ -38,7 +38,7 @@ A modern, secure, and feature-rich URL shortener platform with analytics, admin 
 ---
 
 ## 🌐 Live Demo & Repository
-- **Production:** [https://www.linkshld.xyz/](https://www.linkshld.xyz/)
+- **Production:** [https://www.linkshld.xyz/](https://www.linkshld.xyz/)[~ currently down]
 - **GitHub Repo:** [https://github.com/NishitShelar/LinkShield](https://github.com/NishitShelar/LinkShield)
 
 ---
